@@ -19,12 +19,19 @@ import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     Button meter_image;
     String formattedDate, temp;
+
+    ApiInterface apiService = RestClient.getClient(RestClient.baseUrl).create(ApiInterface.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +71,32 @@ public class MainActivity extends AppCompatActivity {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:s");
         formattedDate = df.format(c.getTime());
         System.out.println("InsideCamera");
-        //submitDataLoading();
+        SendingImage();
         return temp;
+    }
+    public void SendingImage(){
+
+        Call<List<ImageServerResponce>> call = apiService.sendingImage(temp);
+
+        call.enqueue(new Callback<List<ImageServerResponce>>() {
+
+            @Override
+            public void onResponse(Call<List<ImageServerResponce>> call, Response<List<ImageServerResponce>> response) {
+
+                List<ImageServerResponce> imageServerResponces = response.body();
+                if(imageServerResponces != null && imageServerResponces.size()>0){
+                    ImageServerResponce imageServerResponce = imageServerResponces.get(0);
+                    Toast.makeText(MainActivity.this,"Image sent Successfully",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(MainActivity.this,"Error Sending image",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ImageServerResponce>> call, Throwable t) {
+
+            }
+        });
     }
 }

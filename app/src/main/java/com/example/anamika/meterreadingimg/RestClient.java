@@ -4,7 +4,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestClient {
-    public static final String BASE_URL = "http://api.themoviedb.org/3/";
+    public static final String baseUrl = "http://api.themoviedb.org/3/";
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient(String baseUrl) {
